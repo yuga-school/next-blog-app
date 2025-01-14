@@ -36,13 +36,16 @@ const Page: React.FC = () => {
       Array(b.length + 1).fill(0)
     );
 
-    for (let i = 0; i <= a.length; i++) {
-      for (let j = 0; j <= b.length; j++) {
+    const lowerA = a.toLowerCase();
+    const lowerB = b.toLowerCase();
+
+    for (let i = 0; i <= lowerA.length; i++) {
+      for (let j = 0; j <= lowerB.length; j++) {
         if (i === 0) {
           matrix[i][j] = j;
         } else if (j === 0) {
           matrix[i][j] = i;
-        } else if (a[i - 1] === b[j - 1]) {
+        } else if (lowerA[i - 1] === lowerB[j - 1]) {
           matrix[i][j] = matrix[i - 1][j - 1];
         } else {
           matrix[i][j] =
@@ -52,16 +55,18 @@ const Page: React.FC = () => {
       }
     }
 
-    return matrix[a.length][b.length];
+    return matrix[lowerA.length][lowerB.length];
   };
-
   const getTopCategories = (searchQuery: string): string[] => {
     const queryWords = searchQuery;
     const categoryArray = categories;
     const categoryDistances: { category: string; distance: number }[] = [];
     categoryArray?.forEach((category) => {
       const distance = getEditDistance(queryWords, category);
-      categoryDistances.push({ category, distance });
+      categoryDistances.push({
+        category,
+        distance: distance / Number(category.length),
+      });
     });
 
     categoryDistances.sort((a, b) => a.distance - b.distance);
