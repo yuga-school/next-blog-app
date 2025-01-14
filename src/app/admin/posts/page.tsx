@@ -212,10 +212,27 @@ const Page: React.FC = () => {
           </span>
         )}
       </div>
-      <div className="space-y-3">
-        {subposts &&
-          subposts.map((post) => <PostSummary key={post.id} post={post} />)}
-      </div>
+      {subposts?.map((post: Post) => (
+        <div key={post.id}>
+          <PostSummary post={post} />
+          <div className="mt-2 flex items-center justify-end">
+            <div>
+              <Link
+                href={`/admin/posts/${post.id}`}
+                className="mr-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              >
+                編集
+              </Link>
+              <button
+                onClick={() => handleDelete(post.id)}
+                className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+              >
+                削除
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
     </main>
   );
 };
