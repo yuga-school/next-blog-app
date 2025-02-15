@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-
+export const revalidate = 0;
 export const GET = async (req: NextRequest) => {
   try {
     const rawPosts = await prisma.post.findMany({

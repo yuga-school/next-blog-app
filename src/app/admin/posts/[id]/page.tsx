@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 import { Category } from "@/app/_types/Category";
 import type { Post } from "@/app/_types/Post";
 import type { CoverImage } from "@/app/_types/CoverImage";
+import { useAuth } from "@/app/_hooks/useAuth";
 
 // カテゴリをフェッチしたときのレスポンスのデータ型
 type CategoryApiResponse = {
@@ -49,6 +50,7 @@ const Page: React.FC = () => {
   >(null);
   const router = useRouter();
   const { id } = useParams() as { id: string };
+  const { token } = useAuth();
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -184,6 +186,10 @@ const Page: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      if (!token) {
+        window.alert("予期せぬ動作：トークンが取得できません。");
+        return;
+      }
       const requestBody = {
         title: newTitle,
         content: newContent,
@@ -200,10 +206,10 @@ const Page: React.FC = () => {
         cache: "no-store",
         headers: {
           "Content-Type": "application/json",
+          Authorization: token,
         },
         body: JSON.stringify(requestBody),
       });
-
       if (!res.ok) {
         throw new Error(`${res.status}: ${res.statusText}`);
       }
@@ -226,12 +232,19 @@ const Page: React.FC = () => {
     if (!window.confirm("本当にこの投稿記事を削除しますか？")) return;
 
     setIsSubmitting(true);
-
+    if (!token) {
+      window.alert("予期せぬ動作：トークンが取得できません。");
+      return;
+    }
     try {
       const requestUrl = `/api/admin/posts/${id}`;
       const res = await fetch(requestUrl, {
         method: "DELETE",
         cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
       });
 
       if (!res.ok) {

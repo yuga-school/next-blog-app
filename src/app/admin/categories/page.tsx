@@ -12,7 +12,7 @@ interface Category {
 const CategoriesPage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const router = useRouter();
-  const [keyword, setkeyword] = useState("");
+  const [keyword, setKeyword] = useState("");
   useEffect(() => {
     // Fetch categories from your API or data source
     const fetchCategories = async () => {
@@ -100,75 +100,51 @@ const CategoriesPage: React.FC = () => {
     }
   };
   return (
-    <div>
-      <h1 style={{ fontSize: "2em", fontWeight: "bold" }}>カテゴリ一覧</h1>
-      <div className="mb-4">
-        <div className="flex justify-end">
-          <Link
-            href="/admin/categories/new"
-            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            新規作成
-          </Link>
-        </div>
+    <div className="container mx-auto p-4">
+      <h1 className="mb-4 text-2xl font-bold">カテゴリ一覧</h1>
+      <div className="mb-4 flex justify-end">
+        <Link
+          href="/admin/categories/new"
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+        >
+          新規作成
+        </Link>
       </div>
-      <ul>
+      <div className="mb-4">
         <input
           type="text"
           value={keyword}
-          onChange={(e) => setkeyword(e.target.value)}
+          onChange={(e) => setKeyword(e.target.value)}
           placeholder="検索語句を入力"
-          className="mr-2 border p-2"
+          className="mr-2 w-full border p-2 md:w-auto"
         />
-        <label style={{ marginRight: "10px" }}>カテゴリを検索</label>
+        <label className="block md:mr-2 md:inline-block">カテゴリを検索</label>
+      </div>
+      <ul>
         {categories.length === 0 ? (
           <div className="text-gray-500">
             （カテゴリは1個も作成されていません）
           </div>
         ) : (
           getTopCategories(keyword).map((category: Category) => (
-            <li key={category.id} style={{ margin: "10px 0" }}>
-              <div
-                style={{
-                  border: "1px solid #000",
-                  borderRadius: "5px",
-                  padding: "10px",
-                  fontSize: "1em",
-                }}
-              >
-                {category.name}
+            <li key={category.id} className="mb-4">
+              <div className="rounded-md border p-4">
+                <div className="text-lg">{category.name}</div>
+                <div className="mt-2 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+                  <button
+                    onClick={() => handleEdit(category.id)}
+                    className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                  >
+                    編集
+                  </button>
+                  <button
+                    onClick={() => handleDelete(category)}
+                    className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                  >
+                    削除
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => handleEdit(category.id)}
-                style={{
-                  marginRight: "5px",
-                  padding: "3px 5px",
-                  backgroundColor: "#007bff",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "3px",
-                  cursor: "pointer",
-                  fontSize: "0.8em",
-                  marginTop: "5px",
-                }}
-              >
-                編集
-              </button>
-              <button
-                onClick={() => handleDelete(category)}
-                style={{
-                  padding: "3px 5px",
-                  backgroundColor: "#dc3545",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: "3px",
-                  cursor: "pointer",
-                  fontSize: "0.8em",
-                  marginTop: "5px",
-                }}
-              >
-                削除
-              </button>
             </li>
           ))
         )}

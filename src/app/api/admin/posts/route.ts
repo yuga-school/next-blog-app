@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { Post } from "@prisma/client";
+import { supabase } from "@/utils/supabase";
 
 type RequestBody = {
   title: string;
@@ -10,9 +11,12 @@ type RequestBody = {
 };
 
 export const POST = async (req: NextRequest) => {
+  const token = req.headers.get("Authorization") ?? "";
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 401 });
   try {
     const requestBody: RequestBody = await req.json();
-
     // 分割代入
     const { title, content, coverImageURL, categoryIds } = requestBody;
 

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import PostSummary from "@/app/_components/PostSummary"; // コンポーネントのパスを調整してください
 import type { Post } from "@/app/_types/Post"; // 型のパスを調整してください
-
+import { useAuth } from "@/app/_hooks/useAuth";
 const Page: React.FC = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [subposts, setsubPosts] = useState<Post[] | null>(null);
@@ -14,7 +14,7 @@ const Page: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string[] | null>(null);
   const [keyword, setkeyword] = useState<string>("");
   const [searchMode, setSearchMode] = useState<"OR" | "AND">("OR");
-
+  const { token } = useAuth();
   const handleSearch = () => {
     const filteredPosts = posts?.filter((post) => {
       const queryWords = searchQuery;
@@ -124,9 +124,17 @@ const Page: React.FC = () => {
 
   const handleDelete = async (postId: string) => {
     try {
+      if (!token) {
+        window.alert("予期せぬ動作：トークンが取得できません。");
+        return;
+      }
       const response = await fetch(`/api/admin/posts/${postId}`, {
         method: "DELETE",
         cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
       });
       if (!response.ok) {
         throw new Error("削除に失敗しました");
